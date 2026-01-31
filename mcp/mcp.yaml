@@ -1,0 +1,30 @@
+project: local-storage-agent-security
+
+context:
+  domain:
+    - offline-first ai agent
+    - qr code verification
+    - nfc uid validation
+    - blacklist enforcement
+    - audit and compliance
+
+environment:
+  - local storage (browser / device)
+  - supabase backend
+  - edge functions
+
+rules:
+  - server_is_source_of_truth: true
+  - blacklist_overrides_all: true
+  - no_plaintext_personal_id: true
+  - all_scans_must_be_logged: true
+
+ai_behavior:
+  thinking_mode: system_architect
+  preference:
+    - checklist
+    - schema
+    - flow_diagram_text
+  avoid:
+    - ui_design
+    - frontend_code
