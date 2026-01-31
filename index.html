@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>Local Storage Agent - To-Do List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: sans-serif; margin: 2rem; background: #f9f9f9;}
+    #todo-app { max-width: 420px; margin: auto; background: #fff; padding: 2em; border-radius: 12px; box-shadow: 0 0 12px #0002;}
+    h2 { text-align: center; }
+    form { display: flex; margin-bottom: 1em; gap: 0.5em; }
+    input[type="text"] { flex: 1; padding: 0.5em; }
+    button { padding: 0.5em 1em; }
+    ul { padding: 0; list-style: none;}
+    li { display: flex; align-items: center; margin-bottom: 0.5em; background: #f1f1f1; padding: 0.7em; border-radius: 6px; }
+    li.done span { text-decoration: line-through; color: #999; }
+    .actions { margin-left: auto; }
+    .actions button { margin-left: 0.3em; background: none; border: none; cursor: pointer; color: #234fcf; font-size:1.1em;}
+    .actions button.delete { color: #e53935; }
+    @media (max-width: 480px) {
+      #todo-app { padding: 1em; }
+    }
+  </style>
+</head>
+<body>
+  <div id="todo-app">
+    <h2>To-Do List</h2>
+    <form id="add-todo-form" autocomplete="off">
+      <input id="todo-input" type="text" placeholder="เพิ่มสิ่งที่ต้องทำ..." required />
+      <button type="submit">เพิ่ม</button>
+    </form>
+    <ul id="todo-list"></ul>
+  </div>
+<script>
+  const STORAGE_KEY = "todo-list-app";
+  function saveTodos(todos) { localStorage.setItem(STORAGE_KEY, JSON.stringify(todos)); }
+  function loadTodos() { const data = localStorage.getItem(STORAGE_KEY); return data ? JSON.parse(data) : []; }
+  const list = document.getElementById('todo-list');
+  const form = document.getElementById('add-todo-form');
+  const input = document.getElementById('todo-input');
+  let todos = loadTodos();
+  function renderTodos() {
+    list.innerHTML = '';
+    todos.forEach((todo, idx) => {
+      const li = document.createElement('li');
+      if (todo.done) li.classList.add('done');
+      const span = document.createElement('span');
+      span.textContent = todo.text;
+      li.appendChild(span);
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+      const doneBtn = document.createElement('button');
+      doneBtn.innerHTML = todo.done ? '↩️' : '✔️';
+      doneBtn.title = todo.done ? 'ยังไม่เสร็จ' : 'ทำเสร็จแล้ว';
+      doneBtn.onclick = () => { todos[idx].done = !todos[idx].done; saveTodos(todos); renderTodos(); };
+      actions.appendChild(doneBtn);
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = '🗑️';
+      deleteBtn.className = 'delete';
+      deleteBtn.title = 'ลบ';
+      deleteBtn.onclick = () => {
+        if(confirm('ลบงานนี้ใช่หรือไม่?')) {
+          todos.splice(idx, 1);
+          saveTodos(todos);
+          renderTodos();
+        }
+      };
+      actions.appendChild(deleteBtn);
+      li.appendChild(actions);
+      list.appendChild(li);
+    });
+  }
+  form.onsubmit = e => {
+    e.preventDefault();
+    const value = input.value.trim();
+    if (value) {
+      todos.unshift({ text: value, done: false });
+      saveTodos(todos);
+      renderTodos();
+      input.value = '';
+      input.focus();
+    }
+  };
+  renderTodos();
+</script>
+</body>
+</html>
