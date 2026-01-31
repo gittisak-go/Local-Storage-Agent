@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Local Storage Agent - To-Do List</title>
+  <title>To-Do List (Local Storage)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body { font-family: sans-serif; margin: 2rem; background: #f9f9f9;}
-    #todo-app { max-width: 420px; margin: auto; background: #fff; padding: 2em; border-radius: 12px; box-shadow: 0 0 12px #0002;}
+    #todo-app { max-width: 400px; margin: auto; background: #fff; padding: 2em; border-radius: 12px; box-shadow: 0 0 12px #0002;}
     h2 { text-align: center; }
     form { display: flex; margin-bottom: 1em; gap: 0.5em; }
     input[type="text"] { flex: 1; padding: 0.5em; }
@@ -15,9 +15,9 @@
     li { display: flex; align-items: center; margin-bottom: 0.5em; background: #f1f1f1; padding: 0.7em; border-radius: 6px; }
     li.done span { text-decoration: line-through; color: #999; }
     .actions { margin-left: auto; }
-    .actions button { margin-left: 0.3em; background: none; border: none; cursor: pointer; color: #234fcf; font-size:1.1em;}
+    .actions button { margin-left: 0.3em; background: none; border: none; cursor: pointer; color: #234fcf; }
     .actions button.delete { color: #e53935; }
-    @media (max-width: 480px) {
+    @media (max-width: 420px) {
       #todo-app { padding: 1em; }
     }
   </style>
@@ -32,13 +32,22 @@
     <ul id="todo-list"></ul>
   </div>
 <script>
+  // Helper for Local Storage
   const STORAGE_KEY = "todo-list-app";
-  function saveTodos(todos) { localStorage.setItem(STORAGE_KEY, JSON.stringify(todos)); }
-  function loadTodos() { const data = localStorage.getItem(STORAGE_KEY); return data ? JSON.parse(data) : []; }
+  function saveTodos(todos) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+  }
+  function loadTodos() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  }
+
+  // DOM references
   const list = document.getElementById('todo-list');
   const form = document.getElementById('add-todo-form');
   const input = document.getElementById('todo-input');
   let todos = loadTodos();
+
   function renderTodos() {
     list.innerHTML = '';
     todos.forEach((todo, idx) => {
@@ -47,13 +56,21 @@
       const span = document.createElement('span');
       span.textContent = todo.text;
       li.appendChild(span);
+
+      // Actions: done & delete
       const actions = document.createElement('div');
       actions.className = 'actions';
+
       const doneBtn = document.createElement('button');
       doneBtn.innerHTML = todo.done ? '↩️' : '✔️';
       doneBtn.title = todo.done ? 'ยังไม่เสร็จ' : 'ทำเสร็จแล้ว';
-      doneBtn.onclick = () => { todos[idx].done = !todos[idx].done; saveTodos(todos); renderTodos(); };
+      doneBtn.onclick = () => {
+        todos[idx].done = !todos[idx].done;
+        saveTodos(todos);
+        renderTodos();
+      };
       actions.appendChild(doneBtn);
+
       const deleteBtn = document.createElement('button');
       deleteBtn.textContent = '🗑️';
       deleteBtn.className = 'delete';
@@ -66,10 +83,12 @@
         }
       };
       actions.appendChild(deleteBtn);
+
       li.appendChild(actions);
       list.appendChild(li);
     });
   }
+
   form.onsubmit = e => {
     e.preventDefault();
     const value = input.value.trim();
@@ -81,6 +100,8 @@
       input.focus();
     }
   };
+
+  // Initial render
   renderTodos();
 </script>
 </body>
